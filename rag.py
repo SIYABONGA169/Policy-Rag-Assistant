@@ -244,7 +244,7 @@ Answer:"""
                 model=GROQ_MODEL,
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.3,  # Lower temperature for more factual responses
-                max_tokens=500
+                max_tokens=300  # Reduced to save memory
             )
             answer = response.choices[0].message.content.strip()
         except Exception as e:
@@ -273,6 +273,9 @@ Answer:"""
         }
 
 
+# Singleton instance to avoid reloading models on each request
+_pipeline_instance = None
+
 def answer_question(query: str, chat_history: Optional[List[Dict[str, str]]] = None) -> Dict[str, Any]:
     """
     Main entry point for answering policy questions.
@@ -284,8 +287,10 @@ def answer_question(query: str, chat_history: Optional[List[Dict[str, str]]] = N
     Returns:
         Dictionary with 'answer', 'citations', and 'snippets' keys
     """
-    pipeline = RAGPipeline()
-    return pipeline.answer_question(query, chat_history=chat_history)
+    global _pipeline_instance
+    if _pipeline_instance is None:
+        _pipeline_instance = RAGPipeline()
+    return _pipeline_instance.answer_question(query, chat_history=chat_history)
 
 
 if __name__ == "__main__":
