@@ -244,7 +244,7 @@ Answer:"""
                 model=GROQ_MODEL,
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.3,  # Lower temperature for more factual responses
-                max_tokens=300  # Reduced to save memory
+                max_tokens=500
             )
             answer = response.choices[0].message.content.strip()
         except Exception as e:
